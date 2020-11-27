@@ -149,3 +149,46 @@ int set_msq(key_t msq_key, int msq_flg) {
     }
     return msq_id;
 }
+
+
+void init_sem_shm()
+{
+    consumer_cnt_mux_key = 100;
+    sofa_key = 200;
+    cutting_cnt_key = 300;
+    call_barber_key = 400;
+    call_consumer_key= 410;
+    for(int i=0;i<3;i++)
+        wait_cut_finish_key[i] = 500 + 10*i;
+    bill_mux_key = 600;
+    wait_pay_key = 700;
+    bill_cnt_key = 800;
+    cut_trans_mux_key = 900;
+
+    wait_pay_cnt_shm_key = 2000;
+    consumer_id_shm_key = 2100;
+    barber_id_shm_key = 2200;
+
+
+    //初始化信号量和共享内存
+
+    int sem_flg = IPC_CREAT|0644;
+    int sem_val = 1;
+    consumer_cnt_mux_id = set_sem(consumer_cnt_mux_key,sem_val,sem_flg);
+    bill_mux_id = set_sem(bill_mux_key,sem_val,sem_flg);
+    bill_cnt_id = set_sem(bill_cnt_key,sem_val,sem_flg);
+    cut_trans_mux_id = set_sem(cut_trans_mux_key,sem_val,sem_flg);
+
+    sem_val = 0;
+    wait_pay_id = set_sem(wait_pay_key,sem_val,sem_flg);
+    for(int i=0;i<3;i++)
+        wait_cnt_finish_id[i] = set_sem(wait_cut_finish_key[i],sem_val,sem_flg);
+    call_barber_id=set_sem(call_barber_key,sem_val,sem_flg);
+    call_consumer_id = set_sem(call_consumer_key,sem_val,sem_flg);
+
+    sem_val = 4;
+    sofa_id = set_sem(sofa_key,sem_val,sem_flg);
+
+    sem_val = 3;
+    cutting_cnt_id = set_sem(cutting_cnt_key,sem_val,sem_flg);
+}

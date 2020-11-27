@@ -27,6 +27,8 @@ int set_sem(key_t sem_key,int sem_val,int sem_flag);
 int down(int sem_id);
 int up(int sem_id);
 
+
+void init_sem_shm();
 /*信号灯控制用的共同体*/ 
 typedef union semuns {
       int val;
@@ -51,8 +53,11 @@ int cutting_cnt_id;
 int call_barber_key;
 int call_barber_id;
 
-int wait_cut_finish_key;
-int wait_cnt_finish_id;
+int call_consumer_key;
+int call_consumer_id;
+
+int wait_cut_finish_key[3];
+int wait_cnt_finish_id[3];
 
 int bill_mux_key;//使用这个实现一次贡献内存的保护
 int bill_mux_id;
@@ -63,15 +68,16 @@ int bill_cnt_id;
 int wait_pay_key;
 int wait_pay_id;
 
-int trans_key;
-int trans_id;
+int cut_trans_mux_key;//传输id 互斥
+int cut_trans_mux_id;
 
+int wait_pay_cnt_shm_key ;
+int* wait_pay_cnt_shm_content;
 
+int consumer_id_shm_key;
+int* consumer_id_shm_content;
 
-int pay_shm_id;
-int* pay_shm_content;
-
-int cut_shm_id;
-int* cut_shm_content;
+int barber_id_shm_key;
+int* barber_id_shm_content;
 
 
