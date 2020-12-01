@@ -47,7 +47,7 @@ int consumer_cnt_mux_id;
 int sofa_key;
 int sofa_id;
 
-int cutting_cnt_key;
+int cutting_cnt_key;// 正在理发的情况
 int cutting_cnt_id;
 
 int call_barber_key;
@@ -57,12 +57,12 @@ int call_consumer_key;
 int call_consumer_id;
 
 int wait_cut_finish_key[3];
-int wait_cnt_finish_id[3];
+int wait_cut_finish_id[3];
 
 int bill_mux_key;//使用这个实现一次贡献内存的保护
 int bill_mux_id;
 
-int bill_cnt_key;
+int bill_cnt_key;// 理发师那一边计算有几个人理完发但是没付钱,这个用于互斥
 int bill_cnt_id;
 
 int wait_pay_key;
@@ -72,12 +72,15 @@ int cut_trans_mux_key;//传输id 互斥
 int cut_trans_mux_id;
 
 int wait_pay_cnt_shm_key ;
-int* wait_pay_cnt_shm_content;
+int* wait_pay_cnt_shm_content;//记录现在有几个人理完发了,但是还有没有支付
 
 int consumer_id_shm_key;
-int* consumer_id_shm_content;
+int* consumer_id_shm_content;//将消费者的id传送给理发师
 
 int barber_id_shm_key;
-int* barber_id_shm_content;
+int* barber_id_shm_content;//将理发师的id传送给消费者
+
+int consumer_cnt_shm_key;
+int* consumer_cnt_shm_content;
 
 

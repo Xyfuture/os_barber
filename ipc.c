@@ -182,7 +182,7 @@ void init_sem_shm()
     sem_val = 0;
     wait_pay_id = set_sem(wait_pay_key,sem_val,sem_flg);
     for(int i=0;i<3;i++)
-        wait_cnt_finish_id[i] = set_sem(wait_cut_finish_key[i],sem_val,sem_flg);
+        wait_cut_finish_id[i] = set_sem(wait_cut_finish_key[i],sem_val,sem_flg);
     call_barber_id=set_sem(call_barber_key,sem_val,sem_flg);
     call_consumer_id = set_sem(call_consumer_key,sem_val,sem_flg);
 
@@ -191,4 +191,12 @@ void init_sem_shm()
 
     sem_val = 3;
     cutting_cnt_id = set_sem(cutting_cnt_key,sem_val,sem_flg);
+
+    int shm_flg = IPC_CREAT|0644;
+    int shm_num = 4;
+    wait_pay_cnt_shm_content = (int*) set_shm(wait_pay_cnt_shm_key,shm_num,shm_flg);
+    consumer_id_shm_content = (int*) set_shm(consumer_id_shm_key,shm_num,shm_flg);
+    barber_id_shm_content = (int*) set_shm(barber_id_shm_key,shm_num,shm_flg);
+    consumer_cnt_shm_content = (int*) set_shm(consumer_cnt_shm_key,shm_num,shm_flg);
+    //TODO 更新共享内存的初始化
 }

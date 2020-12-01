@@ -10,7 +10,7 @@ P(sofa) // 看看能不能进入sofa
 P(cutting_cnt) //看看能不能进入真正的理发区
 //进入了理发区
 V(sofa) // 释放一个sofa空位
-P(cur_trans_mux)
+P(cut_trans_mux)
 // 放入消费者自己的id
 V(call_barber) // 进入理发区后通知理发师
 P(call_consumer)//等待理发师相应
@@ -29,7 +29,7 @@ P(consumer_cnt)
 V(consumer_cnt)
 ```
 ### 理发师
-
+```cpp
 P(call_barber) //没有call时等待,有call时唤醒
 //读取消费者的id
 //将自己的id写入到缓冲区
@@ -46,6 +46,7 @@ P(bill_cnt)
         V(wait_pay)
         cnt-1;
 V(bill_cnt)
+```
 
 
 
