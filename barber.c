@@ -8,6 +8,7 @@ void barber()
     down(call_barber_id);
     int cid = *consumer_id_shm_content;
     printf("barber %d have consumer %d\n",bid,cid);
+    sleep(sleep_time);
     *barber_id_shm_content = bid;
     up(call_consumer_id);
     printf("barber %d is cutting\n",bid);
@@ -23,6 +24,7 @@ void barber()
         printf("barber %d receive money\n",bid);
         up(wait_pay_id);
         *wait_pay_cnt_shm_content -=1;
+        sleep(sleep_time);
     }
     up(bill_cnt_id);
 }
@@ -35,6 +37,9 @@ int main(int argc,char** argv)
         bid = 1;
     if(argc == 3)
         sleep_time = atoi(argv[2]);
+    else
+        sleep_time = 4;
+    init_sem_shm();
     barber();
     return 0;
 }
