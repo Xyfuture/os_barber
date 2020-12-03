@@ -1,10 +1,12 @@
 #include "ipc.h"
 
-
 int cid;
+int sleep_time;
+
 
 void consumer()
 {
+    sleep(sleep_time);
     down(consumer_cnt_mux_id);
     if(*consumer_cnt_shm_content <20)
     {
@@ -36,11 +38,25 @@ void consumer()
         down(consumer_cnt_mux_id);
         (*consumer_cnt_shm_content) -=1;
         up(consumer_cnt_mux_id);
-        printf("consumer %d leaves barber shop\n");
+        printf("consumer %d leaves barber shop\n",cid);
     }
     else
     {
         // 离开理发店
         up(consumer_cnt_mux_id);
     }
+}
+
+int main(int argc,char** argv)
+{
+    if(argv[1]!=NULL)
+        cid = atoi(argv[1]);
+    else
+        cid = 1;
+    if(argc == 3)
+        sleep_time = atoi(argv[2]);
+    else
+        sleep_time = 1;
+    
+    consumer();
 }
