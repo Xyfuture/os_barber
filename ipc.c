@@ -198,5 +198,5 @@ void init_sem_shm()
     consumer_id_shm_content = (int*) set_shm(consumer_id_shm_key,shm_num,shm_flg);
     barber_id_shm_content = (int*) set_shm(barber_id_shm_key,shm_num,shm_flg);
     consumer_cnt_shm_content = (int*) set_shm(consumer_cnt_shm_key,shm_num,shm_flg);
-    //TODO 更新共享内存的初始化
+    srand(time(0));
 }

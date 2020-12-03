@@ -73,6 +73,10 @@ int main(int argc,char** argv)
         if(pid == 0)
             break;
     }
+    // srand(time(0));
+    // int t= rand()%10;
+    // printf("rand time:%d\n",t);
+    // sleep(t);
     if(pid != 0)
     {
         int status;

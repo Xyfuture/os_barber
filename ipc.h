@@ -16,6 +16,7 @@
 #include <time.h>
 #include <wait.h>
 
+#define MAX_SLEEP_TIME 10;
 
 #define BUFSZ	256
 //建立或获取 ipc 的一组函数的原型说明
