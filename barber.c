@@ -8,7 +8,7 @@ void barber()
     down(call_barber_id);
     int cid = *consumer_id_shm_content;
     printf("barber %d have consumer %d\n",bid,cid);
-    sleep(sleep_time);
+    // sleep(sleep_time);
     *barber_id_shm_content = bid;
     up(call_consumer_id);
     printf("barber %d is cutting\n",bid);
@@ -31,15 +31,36 @@ void barber()
 
 int main(int argc,char** argv)
 {
-    if (argv[1]!=NULL)
-        bid = atoi(argv[1]);
-    else
-        bid = 1;
-    if(argc == 3)
-        sleep_time = atoi(argv[2]);
-    else
-        sleep_time = 4;
+    // if (argv[1]!=NULL)
+    //     bid = atoi(argv[1]);
+    // else
+    //     bid = 1;
+    // if(argc == 3)
+    //     sleep_time = atoi(argv[2]);
+    // else
+    //     sleep_time = 4;
+    sleep_time = 4;
+    int pid =0 ;
+    int process_num = 3;
+
     init_sem_shm();
-    barber();
+    for(int i=0;i<process_num;i++)
+    {
+        bid = i + 1;
+        pid = fork();
+        if(pid == 0)
+            break;
+    }
+
+    if(pid != 0)
+    {
+        int status = 0;
+        for(int i=0;i<process_num;i++)
+            wait(&status);
+        printf("all processs exit\n");
+        return 0;
+    }
+    while (1)
+        barber();
     return 0;
 }

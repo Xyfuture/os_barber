@@ -14,7 +14,7 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <time.h>
-
+#include <wait.h>
 
 
 #define BUFSZ	256

@@ -4,7 +4,7 @@ c_src = consumer.c ipc.c
 c_obj = consumer.o ipc.o 
 p_src = barber.c ipc.c 
 p_obj = barber.o ipc.o
-all:	barber consumer
+all: barber consumer rmipc
 consumer:$(c_obj)
 	gcc $(c_obj) -o consumer
 consumer.o:	$(c_src) $(hdrs)
