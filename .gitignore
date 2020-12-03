@@ -46,9 +46,10 @@
 *.mod*
 *.cmd
 .tmp_versions/
-
+# executable file
 barber
 consumer
+dp
 
 modules.order
 Module.symvers
