@@ -168,7 +168,7 @@ void init_sem_shm()
     wait_pay_cnt_shm_key = 2000;
     consumer_id_shm_key = 2100;
     barber_id_shm_key = 2200;
-
+    consumer_cnt_shm_key = 2300;
 
     //初始化信号量和共享内存
 

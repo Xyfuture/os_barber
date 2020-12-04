@@ -320,5 +320,10 @@ int main(int argc, char *argv[]) {
             tdp->putdown(4);//放下筷子
         }
     }
+    for(int i=0;i<5;i++)
+    {
+        int status;
+        wait(&status);
+    }
     return 0;
 }

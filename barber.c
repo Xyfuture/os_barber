@@ -18,6 +18,7 @@ void barber()
     down(bill_cnt_id);
     *wait_pay_cnt_shm_content +=1;
     up(bill_cnt_id);
+    
     down(bill_cnt_id);
     while(*wait_pay_cnt_shm_content >0 )
     {

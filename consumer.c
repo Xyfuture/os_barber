@@ -32,11 +32,11 @@ void consumer()
         down(wait_cut_finish_id[bid]);//等待理发师结束理发
         //理发结束,开始付款
         printf("consumer %d cutting finish,wait pay for money\n",cid);
-        down(bill_mux_id);//同一时间只能有一个人付款,开始互斥
+        // down(bill_mux_id);//同一时间只能有一个人付款,开始互斥
         sleep(sleep_time);
         down(wait_pay_id); // 等待理发师收款
         printf("consumer %d finish payment\n",cid);
-        up(bill_mux_id);
+        // up(bill_mux_id);
         //此时理发结束,也付完钱了
         up(cutting_cnt_id);//释放一个理发资源
         down(consumer_cnt_mux_id);
