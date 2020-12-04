@@ -65,6 +65,8 @@ int main(int argc,char** argv)
     sleep_time = 4;
     int pid = 0;
     int process_num = 30;
+    if (argc == 2)
+        process_num = atoi(argv[1]);
     init_sem_shm();
     for(int i=0;i<process_num;i++)
     {
