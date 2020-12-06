@@ -6,7 +6,7 @@ r_obj = reader.o ipc.o
 w_src = writer.c ipc.c 
 w_obj = writer.o ipc.o 
 opts	= -g -c
-all:	control reader writer 
+all:	control reader writer rmipcs
 control: $(c_obj)
 	gcc $(c_obj) -o control 
 control.o: $(c_src) $(hdrs)
