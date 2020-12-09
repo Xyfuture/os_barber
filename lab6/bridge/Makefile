@@ -2,7 +2,7 @@ head = bridge.h
 srcs = bridge.cpp
 objs = bridge.o 
 opts = -w -g -c 
-all: bridge
+all: bridge rmipcs
 bridge: $(objs)
 	g++ $(objs) -o bridge
 bridge.o: $(srcs) $(head)

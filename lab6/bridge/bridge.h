@@ -71,7 +71,7 @@ private:
     char *state[5];			//5 个哲学家当前的状态
     Condition *self[5]; //控制 5 个哲学家状态的条件变量
 };
-
+*/
 class control
 {
 public:
@@ -92,11 +92,13 @@ private:
     int *wait_count[2];
     int *run_count[2];
     // int *state[2];
-    int cur_direction;
+    int *cur_direction;
+    int limit;
+    int first_flag;
     Condition *wait_queue[2];//两个方向,正在等待的
     Condition *run_queue[2];//正在跑的
 };
-*/
+
 class fcfs
 {
 public:

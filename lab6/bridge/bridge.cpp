@@ -69,13 +69,13 @@ Condition::~Condition()
 
 void Condition::Wait(Lock *lock)
 {
-    cout<<"in wait\n";
+    // cout<<"in wait\n";
     lock->open_lock();
-    std::cout<<"condition wait open lock\n";
+    // std::cout<<"condition wait open lock\n";
     sema->down();
     // std::cout<<"condition wait\n";
     lock->close_lock();
-    std::cout<<"condition wait get lock\n";
+    // std::cout<<"condition wait get lock\n";
 }
 
 void Condition::Signal()
@@ -85,12 +85,12 @@ void Condition::Signal()
     // if(sema->get_sem_value()<0)
     // {
         // std::cout<<"signal\n";
-        cout<<"condition up\n";
-        sema->up();
+        // cout<<"condition up\n";
+    sema->up();
     // }
 }
 
-/*
+
 int control::get_ipc_id(char *proc_file, key_t key) {
 		#define BUFSZ 256
     FILE *pf;
@@ -121,7 +121,6 @@ int control::get_ipc_id(char *proc_file, key_t key) {
     return -1;
 }
 
-
 int control::set_sem(key_t sem_key, int sem_val, int sem_flg) {
     int sem_id;
   	Sem_uns sem_arg;
@@ -141,7 +140,6 @@ int control::set_sem(key_t sem_key, int sem_val, int sem_flg) {
     }
     return sem_id;
 }
-
 
 char *control::set_shm(key_t shm_key, int shm_num, int shm_flg) {
 
@@ -173,61 +171,101 @@ char *control::set_shm(key_t shm_key, int shm_num, int shm_flg) {
 
 void control::start(int i,int cur)// 方向和当前的编号
 {
+    
     lock->close_lock();
-    if(cur_direction == i)
-        *run_count[i] ++ ;
+    // cout<<"in start\n";
+    int run_flag = 0;
+    // cout<<(*run_count[i])<<"  limit: "<<limit<<endl;
+    if(*cur_direction != (i+1)%2 && (*run_count[i])<limit) // 允许通车
+        run_flag = 1;
     else
     {
-        *wait_count[i] ++ ;
+        *wait_count[i] = (*wait_count[i]) + 1 ;
         std::cout<<"car "<<cur<<" waiting"<<std::endl;
         wait_queue[i]->Wait(lock);
-        wait_count[i] -- ;
-        run_count[i] ++ ;
+        *wait_count[i] = *wait_count[i] - 1 ;
+        run_flag = 1;
     }
+    // cout<<"here\n";
+    if(*run_count[i] == 0)
+    {
+        first_flag  = 1;
+        int min_val = min(*wait_count[i],limit-1);
+        for(int i=0;i<min_val;i++) //唤醒一批
+            wait_queue[i]->Signal();
+    }
+    *run_count[i] = *run_count[i]+1 ;
+    std::cout<<"car "<<cur<<" running direction "<<i<<" in the bridge"<<std::endl;
+    *cur_direction = i;
     lock->open_lock();
 }
 
 void control::finish(int i,int cur)
 {
     lock->close_lock();
-    cur_direction = i;
-    if(*run_count[i]>1)
+    *cur_direction = i;
+    if(first_flag == 0)
         run_queue[i]->Wait(lock);
     sleep(2);
-    *run_count[i] -- ;
+    std::cout<<"car "<<cur<<" finish direction "<<i<<std::endl;
+    *run_count[i] = *run_count[i]-1;
     if(*run_count[i]>0)
         run_queue[i]->Signal();
-    for(int i =0;i<*wait_count[i];i++)
-        wait_queue[i]->Signal();
-
-    if (*run_count[i] == 0&&*wait_count[i] == 0)
+    if(*run_count[i] == 0)
     {
-        cur_direction = -1;
-        wait_queue[(i+1)%2]->Signal();
+        if (wait_count[(i+1)%2]>0)
+            wait_queue[(i+1)%2]->Signal();
+        else if (wait_count[i]>0)
+            wait_queue[i]->Signal();
+        else
+            *cur_direction = -1;
     }
-    
-     lock->open_lock();
+    lock->open_lock();
 }
 
 control::control()
 {
     int ipc_flg = IPC_CREAT | 0644;
-    int rcnt_key = 200;
-    int wcnt_key = 300;
+
+    int rq_key = 200;
+    int wq_key = 300;
     
     int rcnt_shm_key = 400;
     int wcnt_shm_key = 500;
 
     int lock_key = 600;
+    int direction_key = 700;
+
     Sema *sema;
     int sem_id;
-    sem_id = set_sem(lock_key,0,ipc_flg);
+
+    sem_id = set_sem(lock_key,1,ipc_flg);
     sema = new Sema(sem_id);
     lock = new Lock(sema);
 
+    for(int i=0;i<2;i++)
+    {
+        sem_id = set_sem(rq_key+i,0,ipc_flg);
+        sema = new Sema(sem_id);
+        run_queue[i] = new Condition(sema);
+        sem_id = set_sem(wq_key+i,0,ipc_flg);
+        sema = new Sema(sem_id);
+        wait_queue[i] = new Condition(sema);
+    }
 
+    for(int i=0;i<2;i++)
+    {
+        wait_count[i] = (int*)set_shm(wcnt_shm_key+i,4,ipc_flg);
+        run_count[i] = (int*) set_shm(rcnt_shm_key+i,4,ipc_flg);
+    }
+
+    cur_direction = (int *)set_shm(direction_key,4,ipc_flg);
+
+    first_flag = 0 ;
+    limit = 3;
+    *cur_direction = -1;
 }
-*/
+
 
 int fcfs::get_ipc_id(char *proc_file, key_t key) {
 		#define BUFSZ 256
@@ -311,8 +349,8 @@ char *fcfs::set_shm(key_t shm_key, int shm_num, int shm_flg) {
 void fcfs::start(int i,int cur)
 {
     lock->close_lock();
-    cout<<"car "<<cur<<" in start locked\n";
-    cout<<"rcnt: "<<*rcnt<<" wcnt: "<<*wcnt<<endl;
+    // cout<<"car "<<cur<<" in start locked\n";
+    // cout<<"rcnt: "<<*rcnt<<" wcnt: "<<*wcnt<<endl;
     if(*rcnt != 0 || *wcnt!=0)
     {
         *wcnt = (*wcnt) + 1 ;
@@ -363,9 +401,11 @@ fcfs::fcfs()
 
  int main()
  {
-    fcfs* cont;
+    // fcfs* cont;
+    control* cont;
     int pid = -1 ;
-    cont= new fcfs();
+    // cont= new fcfs();
+    cont  = new control();
     srand(time(0));
 
     for(int i=0;i<5;i++)
@@ -380,7 +420,7 @@ fcfs::fcfs()
                 cont->start(direction,i);
                 cont->finish(direction,i);
                 sleep(rand_time);
-                std::cout<<"one \n";
+                // std::cout<<"one \n";
             }
         }
     }
