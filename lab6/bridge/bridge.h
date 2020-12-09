@@ -14,6 +14,7 @@
 #include <sys/sem.h>
 #include <sys/msg.h>
 #include <sys/wait.h>
+#include <time.h>
 
 /*信号灯控制用的共同体*/
 typedef union semuns { int val; } Sem_uns;
@@ -51,7 +52,7 @@ public:
 private:
     Sema *sema; // 信号量
 };
-
+/*
 //哲学家管程的定义
 class dp {
 public:
@@ -94,4 +95,23 @@ private:
     int cur_direction;
     Condition *wait_queue[2];//两个方向,正在等待的
     Condition *run_queue[2];//正在跑的
+};
+*/
+class fcfs
+{
+public:
+    fcfs();
+    ~fcfs();
+
+    void start(int i,int cur);
+    void finish(int i,int cur);
+    int get_ipc_id(char *proc_file, key_t key);
+    int set_sem(key_t sem_key, int sem_val, int sem_flag);
+    char *set_shm(key_t shm_key, int shm_num, int shm_flag);
+
+private:
+    Lock *lock;
+    Condition* wait_queue;
+    int *rcnt;
+    int *wcnt;
 };
