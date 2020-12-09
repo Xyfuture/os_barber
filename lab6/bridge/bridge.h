@@ -90,7 +90,7 @@ private:
     Lock *lock;
     int *wait_count[2];
     int *run_count[2];
-    int *state[2];
+    // int *state[2];
     int cur_direction;
     Condition *wait_queue[2];//两个方向,正在等待的
     Condition *run_queue[2];//正在跑的

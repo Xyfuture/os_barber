@@ -209,5 +209,24 @@ void control::finish(int i,int cur)
         wait_queue[(i+1)%2]->Signal();
     }
     
-    lock->open_lock();
+     lock->open_lock();
+}
+
+control::control()
+{
+    int ipc_flg = IPC_CREAT | 0644;
+    int rcnt_key = 200;
+    int wcnt_key = 300;
+    
+    int rcnt_shm_key = 400;
+    int wcnt_shm_key = 500;
+
+    int lock_key = 600;
+    Sema *sema;
+    int sem_id;
+    sem_id = set_sem(lock_key,0,ipc_flg);
+    sema = new Sema(sem_id);
+    lock = new Lock(sema);
+
+
 }
