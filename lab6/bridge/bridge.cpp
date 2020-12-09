@@ -315,10 +315,10 @@ void fcfs::start(int i,int cur)
     cout<<"rcnt: "<<*rcnt<<" wcnt: "<<*wcnt<<endl;
     if(*rcnt != 0 || *wcnt!=0)
     {
-        *wcnt++;
+        *wcnt = (*wcnt) + 1 ;
         std::cout<<"car "<<cur<<" wait for road"<<std::endl;
         wait_queue->Wait(lock);
-        *wcnt--;
+        *wcnt = (*wcnt) - 1 ;
     }
     *rcnt = 1;
     std::cout<<"car "<<cur<<" run in direction "<<i<<std::endl;
