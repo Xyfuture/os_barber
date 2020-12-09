@@ -49,6 +49,8 @@
 # executable file
 barber
 consumer
+writer
+reader
 dp
 
 modules.order
