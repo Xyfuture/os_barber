@@ -69,6 +69,7 @@ Condition::~Condition()
 
 void Condition::Wait(Lock *lock)
 {
+    cout<<"in wait\n";
     lock->open_lock();
     std::cout<<"condition wait open lock\n";
     sema->down();
@@ -311,12 +312,13 @@ void fcfs::start(int i,int cur)
 {
     lock->close_lock();
     cout<<"car "<<cur<<" in start locked\n";
+    cout<<"rcnt: "<<*rcnt<<" wcnt: "<<*wcnt<<endl;
     if(*rcnt != 0 || *wcnt!=0)
     {
-        wcnt++;
+        *wcnt++;
         std::cout<<"car "<<cur<<" wait for road"<<std::endl;
         wait_queue->Wait(lock);
-        wcnt--;
+        *wcnt--;
     }
     *rcnt = 1;
     std::cout<<"car "<<cur<<" run in direction "<<i<<std::endl;
@@ -328,9 +330,9 @@ void fcfs::finish(int i,int cur)
     lock->close_lock();
     sleep(2);
     std::cout<<"cat "<<cur<<" finished"<<std::endl;
-    if(wcnt >0 )
+    if(*wcnt >0 )
         wait_queue->Signal();
-    rcnt = 0;
+    *rcnt = 0;
     lock->open_lock();
 }
 
