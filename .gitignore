@@ -52,6 +52,7 @@ consumer
 writer
 reader
 dp
+bridge
 
 modules.order
 Module.symvers

@@ -175,17 +175,15 @@ void control::start(int i,int cur)// 方向和当前的编号
 {
     
     lock->close_lock();
-    // cout<<"car "<<cur<<" in start"<<endl;
-    // cout<<"in start\n";
-    int run_flag = 0;
+    int run_flag = 0; // 最后没有用到
     // cout<<(*run_count[i])<<"  limit: "<<limit<<endl;
-    if(*cur_direction == -1 && (*run_count[i])<limit) // 允许通车
+    if(*cur_direction == -1 && (*run_count[i])<limit) // 桥上没车,允许通车
     {
-        if(*run_count[i]!=0)
-            *run_count[i] = *run_count[i]+1 ;
+        if(*run_count[i]!=0) // 等于0的话说明是头车需要唤醒下面的车
+            *run_count[i] = *run_count[i]+1 ; //计数
         run_flag = 1;
     }
-    else
+    else//等待
     {
         *wait_count[i] = (*wait_count[i]) + 1 ;
         std::cout<<"car "<<cur<<" waiting in direction "<<i<<std::endl;
@@ -194,7 +192,7 @@ void control::start(int i,int cur)// 方向和当前的编号
         run_flag = 1;
     }
     // cout<<"here\n";
-    if(*run_count[i] == 0)
+    if(*run_count[i] == 0) // 头车
     {
         first_flag  = 1;
         int min_val = min(*wait_count[i],limit-1);
@@ -203,11 +201,11 @@ void control::start(int i,int cur)// 方向和当前的编号
         {
             wait_queue[i]->Signal();
         }
-        *run_count[i] = min_val+1;
+        *run_count[i] = min_val+1; // 直接记录上所有能跑的车
     }
     // *run_count[i] = *run_count[i]+1 ;
     std::cout<<"car "<<cur<<" running direction "<<i<<" in the bridge"<<std::endl;
-    *cur_direction = i;
+    *cur_direction = i; // 更改桥上行车的方向
     lock->open_lock();
 }
 
@@ -215,19 +213,20 @@ void control::finish(int i,int cur)
 {
     // cout<<"car "<<cur<<" unlock in finish"<<endl;
     lock->close_lock();
-    *cur_direction = i;
-    if(first_flag == 0)
+    // *cur_direction = i;
+    if(first_flag == 0) // 是不是起头的车,不是的话在当前的运行的方向上排队
         run_queue[i]->Wait(lock);
     first_flag = 0;
-    sleep(2);
+    int sleep_time = rand()%5;
+    sleep(sleep_time);
     std::cout<<"car "<<cur<<" finish direction "<<i<<std::endl;
     *run_count[i] = *run_count[i]-1;
-    if(*run_count[i]>0)
+    if(*run_count[i]>0)// 运行的车是排序的,还有能走的车就唤醒下一个
         run_queue[i]->Signal();
     // cout<<"0 wait count: "<<*wait_count[0]<<"  1 wait count:"<<*wait_count[1]<<endl;
-    if(*run_count[i] == 0)
+    if(*run_count[i] == 0) // 最后一个离开的车
     {
-        if ( (*wait_count[(i+1)%2]) >0)
+        if ( (*wait_count[(i+1)%2]) >0) //哪个方向上有等待的车就唤醒那个方向,优先交替方向
         {
             // cout<<"car "<<cur<<" call direction "<<(i+1)%2<<endl;
             wait_queue[(i+1)%2]->Signal();
@@ -238,7 +237,7 @@ void control::finish(int i,int cur)
             // cout<<"car "<<cur<<" call direction "<<i<<endl;
             wait_queue[i]->Signal();
         }
-        else
+        else//都没有车,就把桥置空
             *cur_direction = -1;
     }
     lock->open_lock();
@@ -445,7 +444,7 @@ fcfs::fcfs()
                 direction = rand()%2;
                 cont->start(direction,i);
                 cont->finish(direction,i);
-                // sleep(rand_time);
+                sleep(rand_time);
                 // std::cout<<"one \n";
             }
         }
