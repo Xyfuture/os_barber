@@ -82,12 +82,13 @@ void Condition::Wait(Lock *lock)
 void Condition::Signal()
 {
 
-    std::cout<<"val: "<<sema->get_sem_value()<<std::endl;
+    
     // if(sema->get_sem_value()<0)
     // {
         // std::cout<<"signal\n";
         // cout<<"condition up\n";
     sema->up();
+    // std::cout<<"signal val: "<<sema->get_sem_value()<<std::endl;
     // }
 }
 
@@ -178,7 +179,7 @@ void control::start(int i,int cur)// 方向和当前的编号
     // cout<<"in start\n";
     int run_flag = 0;
     // cout<<(*run_count[i])<<"  limit: "<<limit<<endl;
-    if(*cur_direction != (i+1)%2 && (*run_count[i])<limit) // 允许通车
+    if(*cur_direction == -1 && (*run_count[i])<limit) // 允许通车
     {
         if(*run_count[i]!=0)
             *run_count[i] = *run_count[i]+1 ;
@@ -197,8 +198,8 @@ void control::start(int i,int cur)// 方向和当前的编号
     {
         first_flag  = 1;
         int min_val = min(*wait_count[i],limit-1);
-        cout<<"car "<<cur<<" min val "<<min_val<<endl;
-        for(int i=0;i<min_val;i++) //唤醒一批
+        // cout<<"car "<<cur<<" min val "<<min_val<<endl;
+        for(int t=0;t<min_val;t++) //唤醒一批
         {
             wait_queue[i]->Signal();
         }
@@ -219,21 +220,22 @@ void control::finish(int i,int cur)
         run_queue[i]->Wait(lock);
     first_flag = 0;
     sleep(2);
-    std::cout<<"car "<<cur<<" finish direction "<<i<<" with run_count num "<<*run_count[i]-1 <<std::endl;
+    std::cout<<"car "<<cur<<" finish direction "<<i<<std::endl;
     *run_count[i] = *run_count[i]-1;
     if(*run_count[i]>0)
         run_queue[i]->Signal();
+    // cout<<"0 wait count: "<<*wait_count[0]<<"  1 wait count:"<<*wait_count[1]<<endl;
     if(*run_count[i] == 0)
     {
-        if (wait_count[(i+1)%2]>0)
+        if ( (*wait_count[(i+1)%2]) >0)
         {
-            cout<<"car "<<cur<<" call direction "<<(i+1)%2<<endl;
+            // cout<<"car "<<cur<<" call direction "<<(i+1)%2<<endl;
             wait_queue[(i+1)%2]->Signal();
-            *cur_direction = (i+1)%2 ;
+            // *cur_direction = (i+1)%2 ;
         }
-        else if (wait_count[i]>0)
+        else if ( (*wait_count[i]) >0)
         {
-            cout<<"car "<<cur<<" call direction "<<i<<endl;
+            // cout<<"car "<<cur<<" call direction "<<i<<endl;
             wait_queue[i]->Signal();
         }
         else
@@ -429,8 +431,9 @@ fcfs::fcfs()
     // cont= new fcfs();
     cont  = new control();
     srand(time(0));
+    int pcnt = 10;
 
-    for(int i=0;i<5;i++)
+    for(int i=0;i<pcnt;i++)
     {
         pid = fork();
         int rand_time = rand()%10;
@@ -442,13 +445,13 @@ fcfs::fcfs()
                 direction = rand()%2;
                 cont->start(direction,i);
                 cont->finish(direction,i);
-                sleep(rand_time);
+                // sleep(rand_time);
                 // std::cout<<"one \n";
             }
         }
     }
     int status;
-    for(int i=0;i<5;i++)
+    for(int i=0;i<pcnt;i++)
         wait(&status);
     return 0;
  }
